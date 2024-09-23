@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { ResizableBox } from 'react-resizable'
 import Chat from '@/components/Chat'
 import IDE from '@/components/IDE'
@@ -13,13 +13,6 @@ import 'react-resizable/css/styles.css'
 const MIN_HEIGHT = 200
 const MIN_WIDTH = 300
 
-interface FileItem {
-  name: string
-  type: 'file' | 'folder'
-  size?: string
-  modified?: string
-}
-
 export default function DevonAI() {
   const [sizes, setSizes] = useState({
     chat: { width: 600, height: 400 },
@@ -29,27 +22,12 @@ export default function DevonAI() {
   })
 
   const [url, setUrl] = useState('https://www.example.com')
-  const [files, setFiles] = useState<FileItem[]>([])
 
   const onResize = useCallback((component: keyof typeof sizes) => (_: unknown, { size }: { size: { width: number; height: number } }) => {
     setSizes(prevSizes => ({
       ...prevSizes,
       [component]: size,
     }))
-  }, [])
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      const mockFiles: FileItem[] = [
-        { name: 'Documents', type: 'folder', modified: '2023-05-15 10:30' },
-        { name: 'Downloads', type: 'folder', modified: '2023-05-14 15:45' },
-        { name: 'project.txt', type: 'file', size: '2.5 KB', modified: '2023-05-13 09:20' },
-        { name: 'image.jpg', type: 'file', size: '1.2 MB', modified: '2023-05-12 14:10' },
-      ]
-      setFiles(mockFiles)
-    }
-
-    fetchFiles()
   }, [])
 
   const handleBrowse = (newUrl: string) => {
@@ -87,7 +65,7 @@ export default function DevonAI() {
               onResize={onResize('browserFile')}
               className="overflow-hidden"
             >
-              <BrowserFile url={url} onBrowse={handleBrowse} files={files} />
+              <BrowserFile url={url} onBrowse={handleBrowse} />
             </ResizableBox>
             <ResizableBox
               width={sizes.terminal.width}
