@@ -12,7 +12,7 @@ interface Message {
   content: string
 }
 
-export default function Chat() {
+export default function Agent() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
@@ -30,7 +30,7 @@ export default function BrowserFile({ url, onBrowse }: BrowserFileProps) {
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileContent, setFileContent] = useState<string>('')
 
-  const handleNavigate = async (urlToNavigate: string) => {
+  const handleNavigate = useCallback(async (urlToNavigate: string) => {
     setLoading(true)
     try {
       const response = await fetch('http://localhost:3001/api/browse', {
@@ -56,9 +56,9 @@ export default function BrowserFile({ url, onBrowse }: BrowserFileProps) {
       setContent('An error occurred while loading the page.')
     }
     setLoading(false)
-  }
+  }, [onBrowse])
 
-  const fetchDirectory = async (path: string) => {
+  const fetchDirectory = useCallback(async (path: string) => {
     try {
       const response = await fetch(`http://localhost:3001/api/fs/list?path=${encodeURIComponent(path)}`)
       const data = await response.json()
@@ -67,7 +67,7 @@ export default function BrowserFile({ url, onBrowse }: BrowserFileProps) {
     } catch (error) {
       console.error('Error fetching directory:', error)
     }
-  }
+  }, [])
 
   const handleFileAction = async (file: FileItem) => {
     if (file.isDirectory) {
@@ -124,7 +124,7 @@ export default function BrowserFile({ url, onBrowse }: BrowserFileProps) {
     handleNavigate(url)
     // Initial load of file system
     fetchDirectory('/')
-  }, [url])
+  }, [url, handleNavigate, fetchDirectory])
 
   useEffect(() => {
     if (activeTab === 'browser') {
@@ -132,7 +132,7 @@ export default function BrowserFile({ url, onBrowse }: BrowserFileProps) {
     } else if (activeTab === 'files') {
       fetchDirectory(currentPath)
     }
-  }, [activeTab])
+  }, [activeTab, handleNavigate, fetchDirectory, inputUrl, currentPath])
 
   return (
     <Card className="flex flex-col h-full">
